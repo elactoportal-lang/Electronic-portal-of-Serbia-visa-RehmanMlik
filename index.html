@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Верификација Е-Визе | E-Visa Verification Portal</title>
+    <style>
+        /* GENERAL STYLES */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f7f6;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            flex: 1;
+            width: 90%;
+            max-width: 1100px;
+            margin: 30px auto;
+            background: #fff;
+            padding: 40px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        /* HEADER & FOOTER */
+        header, footer {
+            width: 100%;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .header-img, .footer-img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* SEARCH SECTION */
+        .page-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #0056b3;
+            padding-bottom: 15px;
+        }
+
+        .page-header h1 {
+            color: #0056b3;
+            font-size: 24px;
+            margin: 0;
+        }
+
+        .page-header h2 {
+            color: #666;
+            font-size: 18px;
+            font-weight: normal;
+            margin: 5px 0 0;
+        }
+
+        .search-box {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .instruction-text {
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .instruction-text.English {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #0056b3;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        .verify-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .verify-btn:hover {
+            background-color: #004494;
+        }
+
+        .error-text {
+            color: #d9534f;
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        /* RESULTS SECTION */
+        /* Green Verification Bar */
+        .verification-bar {
+            background-color: #28a745;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .status-icon {
+            font-size: 24px;
+            margin-right: 15px;
+        }
+
+        /* Main Layout */
+        .visa-details-container {
+            display: flex;
+            gap: 30px;
+        }
+
+        .details-main {
+            flex: 3;
+        }
+
+        .details-photo {
+            flex: 1;
+            text-align: right;
+        }
+
+        .visa-photo {
+            width: 150px;
+            height: auto;
+            border: 3px solid #ccc;
+            border-radius: 4px;
+            padding: 5px;
+            background-color: #fff;
+        }
+
+        /* Details Sections & Tables */
+        .details-section {
+            margin-bottom: 25px;
+        }
+
+        .details-section h3 {
+            font-size: 16px;
+            color: #0056b3;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .details-table td {
+            padding: 10px;
+            vertical-align: top;
+            border-bottom: 1px solid #f1f1f1;
+        }
+
+        .details-table td.label {
+            width: 40%;
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .details-table td.value {
+            width: 60%;
+            font-weight: bold;
+            font-size: 15px;
+            color: #000;
+        }
+
+        /* Specific styling for key values */
+        .value.name-value, 
+        .value.document-value, 
+        .value.validity-value, 
+        .value.visual-id, 
+        .value.verification-code {
+            color: #0056b3;
+        }
+
+        .back-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header>
+        <img src="images/header.png" alt="Portal Header - eID.gov.rs" class="header-img">
+    </header>
+
+    <main class="container">
+        
+        <!-- SEARCH SECTION (VISIBLE BY DEFAULT) -->
+        <div id="search-section">
+            <div class="page-header">
+                <h1>Провера статуса електронске визе</h1>
+                <h2>Check E-Visa Status</h2>
+            </div>
+            
+            <div class="search-box">
+                <p class="instruction-text">Унесите ИД апликације (или верификациони код) и број пасоша да бисте верификовали визу.</p>
+                <p class="instruction-text English">Enter Application ID (or verification code) and Passport Number to verify the visa.</p>
+                
+                <form id="verification-form">
+                    <div class="input-group">
+                        <label for="applicationId">ИД апликације / Application ID</label>
+                        <input type="text" id="applicationId" placeholder="напр. 60911-42313-44450" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="passportNumber">Број путне исправе (пасоша) / Passport Number</label>
+                        <input type="text" id="passportNumber" placeholder="напр. RK1820012" required>
+                    </div>
+                    
+                    <button type="submit" class="verify-btn">Верификуј / Verify</button>
+                </form>
+                <p id="error-message" class="error-text" style="display: none;">Неважећи детаљи. Проверите унос. / Invalid details. Please check your entry.</p>
+            </div>
+        </div>
+
+        <!-- RESULTS SECTION (HIDDEN BY DEFAULT) -->
+        <div id="results-section" style="display: none;">
+            
+            <!-- Green Verification Bar -->
+            <div class="verification-bar">
+                <span class="status-icon">✓</span>
+                <span class="status-text">Е-ВИЗА ЈЕ ВЕРИФИКОВАНА / E-VISA IS VERIFIED</span>
+            </div>
+
+            <div class="visa-details-container">
+                
+                <!-- Main Data (Left) -->
+                <div class="details-main">
+                    
+                    <!-- Section: Application Details -->
+                    <div class="details-section">
+                        <h3>Детаљи апликације / Application Details</h3>
+                        <table class="details-table">
+                            <tr>
+                                <td class="label">ИД апликације /<br>Application ID</td>
+                                <td class="value">60911-42313-44450</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Датум регистрације /<br>Date of Registration</td>
+                                <td class="value">30/04/2026</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Section: Personal Details -->
+                    <div class="details-section">
+                        <h3>Једина електронска е-виза издата за /<br>The Only Electronic E-Visa issued To</h3>
+                        <table class="details-table">
+                            <tr>
+                                <td class="label">Презиме Име /<br>Surname, Given name</td>
+                                <td class="value name-value">ALI REHMAN</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Датум рођења /<br>Date of Birth</td>
+                                <td class="value">15/10/2002</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Пол /<br>Gender</td>
+                                <td class="value">MALE / M</td>
+                            </tr>
+                            <tr>
+                                <td class="label">националност /<br>Nationality</td>
+                                <td class="value">PAKISTANI</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Број путне исправе /<br>Travel Document Number</td>
+                                <td class="value document-value">RK1820012</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Section: Visa Data -->
+                    <div class="details-section">
+                        <h3>Подаци о издатој електронској визи /<br>Data on the issued Electronic E-visa</h3>
+                        <table class="details-table">
+                            <tr>
+                                <td class="label">Важење електронске е-визе /<br>Validity of Electronic E-Visa</td>
+                                <td class="value validity-value">01/05/2026 to 30/07/2026</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Трајање боравка (дана) /<br>Duration of Stay (Days)</td>
+                                <td class="value">90 Days</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Број тражених улазака /<br>Number of Entries Requested</td>
+                                <td class="value">Један улазак / Single Entry</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Датум одлуке о одобрену е-визе /<br>E-Visa Approval Decision Date</td>
+                                <td class="value">01/05/2026</td>
+                            </tr>
+                            <tr>
+                                <td class="label">ИД број визе за један улазак /<br>Single Entry Visa ID Number</td>
+                                <td class="value visual-id">DJH303455</td>
+                            </tr>
+                            <tr>
+                                <td class="label">Код за верификацију визе /<br>eVisa Verification Code</td>
+                                <td class="value verification-code">b14a1170-1446-4317-9d3f-Ja50165</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                </div>
+
+                <!-- User Photo (Right) -->
+                <div class="details-photo">
+                    <img src="images/user_photo.png" alt="Visa Holder Photo" class="visa-photo">
+                </div>
+
+            </div>
+
+            <button onclick="window.location.reload();" class="back-btn">Назад на претрагу / Back to Search</button>
+
+        </div>
+    </main>
+
+    <!-- Footer Section -->
+    <footer>
+        <img src="images/footer.png" alt="Portal Footer" class="footer-img">
+    </footer>
+
+    <script>
+        document.getElementById('verification-form').addEventListener('submit', function(event) {
+            // Prevent the form from actually submitting
+            event.preventDefault();
+
+            // 1. HARDCODED "CORRECT" VALUES FROM THE DOCUMENT
+            const correctApplicationId = "60911-42313-44450";
+            const correctPassportNumber = "RK1820012";
+
+            // 2. GET USER INPUT
+            const inputAppId = document.getElementById('applicationId').value.trim();
+            const inputPassport = document.getElementById('passportNumber').value.trim();
+            
+            const errorMessage = document.getElementById('error-message');
+
+            // 3. VERIFICATION LOGIC (Simulated)
+            if (inputAppId === correctApplicationId && inputPassport === correctPassportNumber) {
+                // MATCH: Hide search, show results
+                document.getElementById('search-section').style.display = 'none';
+                document.getElementById('results-section').style.display = 'block';
+                errorMessage.style.display = 'none';
+                
+                // Scroll to the top of the page to see the green bar
+                window.scrollTo(0, 0);
+            } else {
+                // NO MATCH: Show error message
+                errorMessage.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
